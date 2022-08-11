@@ -54,9 +54,10 @@ class Interface():
 		self.size = len(old_labelss)
 		old_first_index = self.old_index - self.old_index % one_page_size
 		if self.old_index != self.index or self.old_mode != self.mode or old_labelss is not labelss:
-			old_labels = old_labelss[self.old_index]
-			for label in old_labels:
-				label.config(fg = black_color)
+			if self.old_index < self.size:
+				old_labels = old_labelss[self.old_index]
+				for label in old_labels:
+					label.config(fg = black_color)
 
 		if self.old_mode == InterfaceMode.picture:
 			self.old_mode = InterfaceMode.character
@@ -72,7 +73,7 @@ class Interface():
 				label.grid_remove()
 		self.grid_labels_index.clear()
 
-		if self.old_labelss is not labelss:
+		if self.old_labelss is not labelss and self.index < self.size:
 			new_labels = self.old_labelss[self.index]
 			for label in new_labels:
 				label.config(fg = black_color)
@@ -82,6 +83,8 @@ class Interface():
 		if self.index >= self.size:
 			self.index = 0
 
+		if 0 == self.size:
+			return
 		new_labels = labelss[self.index]
 		for label in new_labels:
 			label.config(fg = red_color)
@@ -107,9 +110,10 @@ class Interface():
 			self.old_mode = InterfaceMode.picture
 
 		labelss = self.old_labelss
-		old_labels = labelss[self.old_index]
-		for label in old_labels:
-			label.config(fg = black_color)
+		if self.old_index < len(labelss):
+			old_labels = labelss[self.old_index]
+			for label in old_labels:
+				label.config(fg = black_color)
 
 		for index in self.grid_labels_index:
 			if index < 0 or index >= self.size:
@@ -129,6 +133,8 @@ class Interface():
 		if self.index >= self.size:
 			self.index = 0
 
+		if 0 == self.size:
+			return
 		new_labels = labelss[self.index]
 		cols_size = len(display_cols)
 		has_pic = False
@@ -162,7 +168,10 @@ class Interface():
 		self.old_index = self.index
 		self.index += one_page_size
 		if self.index >= self.size:
-			self.index = self.size - 1
+			if self.size > 0:
+				self.index = self.size - 1
+			else:
+				self.index = 0
 
 	def up(self, event):
 		if self.index <= 0:
